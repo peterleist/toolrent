@@ -13,5 +13,8 @@ namespace ToolRentWebApi.Model
 
         public string Desc { get; set; }
 
+        public string Category { get; set; }
+
+        public ICollection<Reservation> Reservations { get; set; }
     }
 }

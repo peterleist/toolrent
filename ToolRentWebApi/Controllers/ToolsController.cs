@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace ToolRentWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ToolsController : ControllerBase
     {
         private ToolRentDbContext _toolRentDbContext;
@@ -40,6 +42,16 @@ namespace ToolRentWebApi.Controllers
         public void Post([FromBody] Tool tool)
         {
             _toolRentDbContext.Tools.Add(tool);
+            _toolRentDbContext.SaveChanges();
+        }
+
+        // POST api/<ToolsController>
+        [HttpPut]
+        [Route("[action]/{id}")]
+        public void SetCategory(int id, [FromBody] int categoryId)
+        {
+            var entity = _toolRentDbContext.Tools.Find(id);
+            entity.Category = _toolRentDbContext.Categorys.Find(categoryId).Name;
             _toolRentDbContext.SaveChanges();
         }
 
