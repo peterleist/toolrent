@@ -46,6 +46,9 @@ namespace ToolRentWebApi.Controllers
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+            var category = _toolRentDbContext.Categorys.Find(id);
+            category.Name = value;
+            _toolRentDbContext.SaveChanges();
         }
 
         // DELETE api/<CategoryController>/5

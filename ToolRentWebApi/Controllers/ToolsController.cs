@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,21 +24,27 @@ namespace ToolRentWebApi.Controllers
             _toolRentDbContext = toolRentDbContext;
         }
 
-        // GET: api/<ToolsController>
+        // GET: All tools
         [HttpGet]
         public IEnumerable<Tool> Get()
         {
-            return _toolRentDbContext.Tools;
+            return _toolRentDbContext.Tools.Include("Reservations");
         }
 
-        // GET api/<ToolsController>/5
+        // GET: Specific tool
         [HttpGet("{id}")]
-        public Tool Get(int id)
+        public IActionResult Get(int id)
         {
-            return _toolRentDbContext.Tools.Find(id);
+            var tool = _toolRentDbContext.Tools.Include("Reservations").FirstOrDefault(m=>m.Id == id);
+
+            if (tool == null) {
+                return NotFound();
+            }
+
+            return Ok(tool);
         }
 
-        // POST api/<ToolsController>
+        // POST: Add tool
         [HttpPost]
         public void Post([FromBody] Tool tool)
         {
@@ -45,7 +52,7 @@ namespace ToolRentWebApi.Controllers
             _toolRentDbContext.SaveChanges();
         }
 
-        // POST api/<ToolsController>
+        // SetCategory
         [HttpPut]
         [Route("[action]/{id}")]
         public void SetCategory(int id, [FromBody] int categoryId)
@@ -55,22 +62,35 @@ namespace ToolRentWebApi.Controllers
             _toolRentDbContext.SaveChanges();
         }
 
-        // PUT api/<ToolsController>/5
+
+        // Add reservation
+        [HttpPost]
+        [Route("[action]/{id}")]
+        public void AddReservation(int id, [FromBody] Reservation reservation)
+        {
+            var entity =_toolRentDbContext.Tools.Find(id);
+            reservation.ToolId = id;
+            _toolRentDbContext.Reservations.Add(reservation);
+            _toolRentDbContext.SaveChanges();
+        }
+
+        // PUT 
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] Tool tool)
         {
             var entity = _toolRentDbContext.Tools.Find(id);
             entity.Name = tool.Name;
             entity.Desc = tool.Desc;
+            entity.Category = tool.Category;
             _toolRentDbContext.SaveChanges();
         }
 
-        // DELETE api/<ToolsController>/5
+        // DELETE 
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            var entity = _toolRentDbContext.Tools.Find(id);
-            _toolRentDbContext.Tools.Remove(entity);
+            var tool = _toolRentDbContext.Tools.Include("Reservations").FirstOrDefault(m => m.Id == id);
+            _toolRentDbContext.Tools.Remove(tool);
             _toolRentDbContext.SaveChanges();
         }
     }
