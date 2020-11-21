@@ -15,6 +15,10 @@ namespace ToolRentWebApi.Data
         }
         public DbSet<Tool> Tools { get; set; }
 
+        public DbSet<CategoryConnection> CategoryConnection { get; set; }
+
+        public DbSet<ReservationConnection> ReservationConnection { get; set; }
+
         public DbSet<Category> Categorys { get; set; }
 
         public DbSet<Reservation> Reservations { get; set; }

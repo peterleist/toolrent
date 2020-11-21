@@ -11,8 +11,6 @@ namespace ToolRentWebApi.Model
 
         public string Email { get; set; }
 
-        public int ToolId { get; set; }
-
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }

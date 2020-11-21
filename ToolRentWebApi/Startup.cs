@@ -32,7 +32,12 @@ namespace ToolRentWebApi
         {
             services.AddControllers();
 
-            services.AddDbContext<ToolRentDbContext>(option => option.UseSqlServer(@"Server = tcp:peterleist.database.windows.net, 1433; Initial Catalog = toolRent; Persist Security Info = False; User ID = peterleist; Password =Aspirine12; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;"));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "ToolAPI", Version = "v1" });
+            });
+
+            services.AddDbContext<ToolRentDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("ToolDbContext")));
 
             string domain = $"https://{Configuration["Auth0:Domain"]}/";
             services
@@ -52,10 +57,17 @@ namespace ToolRentWebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ToolRentDbContext toolRentDbContext)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToolAPI version 1");
+            });
 
             app.UseHttpsRedirection();
 

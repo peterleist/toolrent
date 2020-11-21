@@ -10,7 +10,7 @@ using ToolRentWebApi.Model;
 
 namespace ToolRentWebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase
     {
@@ -29,11 +29,25 @@ namespace ToolRentWebApi.Controllers
             return _toolRentDbContext.Reservations;
         }
 
+        // GET: api/<ReserveationsController>
+        [HttpGet("[action]")]
+        public IEnumerable<Reservation> GetByUser([FromBody] string user)
+        {
+            var reservations = from r in _toolRentDbContext.Reservations
+                               where r.Email == user
+                               select r;
+
+            return reservations;
+        }
+
         // DELETE api/<ReserveationsController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
             var reservation = _toolRentDbContext.Reservations.Find(id);
+
+            var connection = _toolRentDbContext.ReservationConnection.FirstOrDefault(c => c.reservationId == id);
+            _toolRentDbContext.Remove(connection);
             _toolRentDbContext.Remove(reservation);
             _toolRentDbContext.SaveChanges();
         }
